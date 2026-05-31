@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Not Here. - 야바위꾼 시뮬레이터</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="플레이어가 야바위꾼이 되어 손님을 속이고 1000달러를 버는 레트로 웹 야바위 시뮬레이터 게임 'Not Here.'">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Lantern Glow Effects -->
+  <div class="lantern-glow glow-red"></div>
+  <div class="lantern-glow glow-orange"></div>
+
+  <!-- INTRO SCREEN -->
+  <div id="intro-screen" class="screen active">
+    <div class="intro-content">
+      <h1 class="logo-title">NOT<br><span class="highlight">HERE.</span></h1>
+      <p class="subtitle">"여긴 없어. 과연 진짜는 어디 있을까?"</p>
+      
+      <div class="intro-description">
+        <p>당신은 허름한 골목길 야시장의 <strong>야바위꾼</strong>입니다.</p>
+        <p>컵 3개와 공 1개로 손님들을 속여 <strong>$200</strong>를 모으는 것이 목표입니다.</p>
+        <p>하지만 조심하세요! 손님을 속일수록 <strong>의심도</strong>가 올라갑니다.</p>
+        <p>의심도가 100%가 되거나 돈이 $0가 되면 게임 오버입니다.</p>
+      </div>
+
+      <button id="btn-start" class="btn btn-primary btn-glow">게임 시작 (Start Game)</button>
+    </div>
+  </div>
+
+  <!-- MAIN GAME SCREEN -->
+  <div id="game-screen" class="screen">
+    
+    <!-- TOP BAR UI -->
+    <header class="top-bar">
+      <div class="ui-item shadow-panel">
+        <span class="label">돈 (MONEY)</span>
+        <span id="money-display" class="value text-gold">$100</span>
+      </div>
+      <div class="ui-item shadow-panel">
+        <span class="label">라운드 (ROUND)</span>
+        <span id="round-display" class="value">1</span>
+      </div>
+      <div class="ui-item shadow-panel suspicion-panel">
+        <div class="suspicion-info">
+          <span class="label">의심도 (SUSPICION)</span>
+          <span id="suspicion-text" class="value text-red">0%</span>
+        </div>
+        <div class="progress-container">
+          <div id="suspicion-bar" class="progress-bar red-glow" style="width: 0%;"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN GAME AREA -->
+    <main class="game-main">
+      
+      <!-- LEFT AREA: WOODEN TABLE -->
+      <section class="table-area">
+        <div id="table-board" class="table-board">
+          <div class="table-light"></div>
+          
+          <!-- Cups and Ball Container -->
+          <div id="cups-container" class="cups-container">
+            <!-- Cup 1 -->
+            <div class="cup-slot" id="slot-0">
+              <div class="cup-item" data-index="0">
+                <div class="cup-lift-container">
+                  <div class="cup-sprite"></div>
+                </div>
+                <div class="target-marker">▼</div>
+              </div>
+            </div>
+            <!-- Cup 2 -->
+            <div class="cup-slot" id="slot-1">
+              <div class="cup-item" data-index="1">
+                <div class="cup-lift-container">
+                  <div class="cup-sprite"></div>
+                </div>
+                <div class="target-marker">▼</div>
+              </div>
+            </div>
+            <!-- Cup 3 -->
+            <div class="cup-slot" id="slot-2">
+              <div class="cup-item" data-index="2">
+                <div class="cup-lift-container">
+                  <div class="cup-sprite"></div>
+                </div>
+                <div class="target-marker">▼</div>
+              </div>
+            </div>
+            
+            <!-- White Ball -->
+            <div id="white-ball" class="white-ball"></div>
+          </div>
+          
+          <!-- Instructions Overlay / Banner -->
+          <div id="action-banner" class="action-banner">
+            컵을 섞기 위해 아래 버튼을 누르세요.
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT AREA: CUSTOMER DIALOGUE & STATS -->
+      <section class="npc-panel shadow-panel">
+        <div class="npc-header">
+          <div id="npc-avatar" class="npc-avatar-box">
+            <!-- SVG Avatar drawn dynamically -->
+          </div>
+          <div class="npc-info">
+            <h2 id="npc-name">초보 피터</h2>
+            <span id="npc-badge" class="badge badge-easy">초보 손님</span>
+          </div>
+        </div>
+
+        <div class="npc-stats">
+          <div class="stat-row">
+            <span class="stat-label">관찰력</span>
+            <div class="stat-bar-bg"><div id="stat-obs-bar" class="stat-bar" style="width: 30%"></div></div>
+            <span id="stat-obs-val" class="stat-value">30%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">베팅액</span>
+            <span id="stat-bet-val" class="stat-value text-gold">$20</span>
+          </div>
+        </div>
+
+        <!-- Speech bubble -->
+        <div class="dialogue-box">
+          <div class="speech-bubble">
+            <p id="npc-speech">"흐음... 길거리 야바위인가? 한 판 해볼까?"</p>
+          </div>
+        </div>
+
+        <!-- NPC reaction indicators (cheat caught warning etc) -->
+        <div id="alert-banner" class="alert-banner hide"></div>
+      </section>
+    </main>
+
+    <!-- BOTTOM PANEL: TRICK SKILLS & CONTROL -->
+    <footer class="control-panel">
+      <!-- Action buttons -->
+      <div class="main-actions">
+        <button id="btn-action" class="btn btn-success btn-glow">컵 섞기 시작</button>
+        <button id="btn-open-shop" class="btn btn-shop">암시장 상점</button>
+      </div>
+
+      <!-- Skills Grid -->
+      <div class="skills-section">
+        <h3>속임수 기술 (Trick Skills)</h3>
+        <div class="skills-grid">
+          <!-- Skill 1: Hand Sleight -->
+          <button id="skill-sleight" class="skill-btn" disabled>
+            <div class="skill-icon">👋</div>
+            <div class="skill-info">
+              <span class="skill-name">손놀림</span>
+              <span class="skill-meta">의심도 +15% | 쿨타임 2T</span>
+            </div>
+            <div class="cooldown-overlay" id="cooldown-sleight"></div>
+            <span class="tooltip">컵을 섞은 뒤 몰래 공의 위치를 바꿉니다. (성공률에 따라 실패할 수 있음)</span>
+          </button>
+
+          <!-- Skill 2: Fake Ball -->
+          <button id="skill-fake-ball" class="skill-btn" disabled>
+            <div class="skill-icon">🔮</div>
+            <div class="skill-info">
+              <span class="skill-name">가짜 공</span>
+              <span class="skill-meta">의심도 +10% | 쿨타임 3T</span>
+            </div>
+            <div class="cooldown-overlay" id="cooldown-fake-ball"></div>
+            <span class="tooltip">잠깐 동안 여러 개의 공이 보이는 시각 효과로 관찰력을 50% 낮춥니다.</span>
+          </button>
+
+          <!-- Skill 3: Distraction -->
+          <button id="skill-distraction" class="skill-btn" disabled>
+            <div class="skill-icon">⚡</div>
+            <div class="skill-info">
+              <span class="skill-name">시선 분산</span>
+              <span class="skill-meta">의심도 +8% | 쿨타임 3T</span>
+            </div>
+            <div class="cooldown-overlay" id="cooldown-distraction"></div>
+            <span class="tooltip">화면을 흔들어 손님의 집중력을 흐트러뜨려 관찰력을 40% 낮춥니다.</span>
+          </button>
+
+          <!-- Skill 4: Fake Cup -->
+          <button id="skill-fake-cup" class="skill-btn" disabled>
+            <div class="skill-icon">🥤</div>
+            <div class="skill-info">
+              <span class="skill-name">가짜 컵</span>
+              <span class="skill-meta">의심도 +20% | 쿨타임 5T</span>
+            </div>
+            <div class="cooldown-overlay" id="cooldown-fake-cup"></div>
+            <span class="tooltip">네 번째 컵을 소환하여 선택의 폭을 넓히고 관찰력을 60% 낮춥니다.</span>
+          </button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- SHOP MODAL -->
+  <div id="shop-modal" class="modal">
+    <div class="modal-content shadow-panel">
+      <div class="modal-header">
+        <h2>암시장 업그레이드 (Black Market)</h2>
+        <button id="btn-close-shop" class="btn-close">&times;</button>
+      </div>
+      
+      <div class="shop-current-money">
+        보유 자금: <span id="shop-money" class="text-gold">$100</span>
+      </div>
+
+      <div class="shop-items">
+        <!-- Upgrade 1 -->
+        <div class="shop-item">
+          <div class="shop-item-desc">
+            <h3>👋 손기술 강화</h3>
+            <p>공 이동(손놀림)의 기본 성공률을 증가시킵니다.</p>
+            <span class="upgrade-status" id="upg-sleight-status">현재: 70% ➔ 다음: 80%</span>
+          </div>
+          <button class="btn btn-buy" id="btn-upg-sleight" data-type="sleight">
+            구매 <span class="cost-val" id="upg-sleight-cost">$100</span>
+          </button>
+        </div>
+
+        <!-- Upgrade 2 -->
+        <div class="shop-item">
+          <div class="shop-item-desc">
+            <h3>👥 바람잡이 고용</h3>
+            <p>군중 속 바람잡이를 고용해 속임수 사용 시 발생하는 의심도 상승을 15%씩 감소시킵니다.</p>
+            <span class="upgrade-status" id="upg-shill-status">현재: 감면 없음 ➔ 다음: 15%</span>
+          </div>
+          <button class="btn btn-buy" id="btn-upg-shill" data-type="shill">
+            구매 <span class="cost-val" id="upg-shill-cost">$150</span>
+          </button>
+        </div>
+
+        <!-- Upgrade 3 -->
+        <div class="shop-item">
+          <div class="shop-item-desc">
+            <h3>🪵 화려한 테이블</h3>
+            <p>나무 테이블을 더 화려하게 꾸며 손님의 경계심을 낮추고 라운드당 베팅 금액을 10% 증가시킵니다.</p>
+            <span class="upgrade-status" id="upg-table-status">현재: 기본 테이블 ➔ 다음: +10%</span>
+          </div>
+          <button class="btn btn-buy" id="btn-upg-table" data-type="table">
+            구매 <span class="cost-val" id="upg-table-cost">$120</span>
+          </button>
+        </div>
+
+        <!-- Upgrade 4 -->
+        <div class="shop-item">
+          <div class="shop-item-desc">
+            <h3>💡 조명 설치</h3>
+            <p>테이블 근처에 밝고 흔들리는 야시장 조명을 설치해 시선 분산 효과를 강화합니다. (관찰력 추가 감소)</p>
+            <span class="upgrade-status" id="upg-light-status">현재: 기본 조명 ➔ 다음: +10%</span>
+          </div>
+          <button class="btn btn-buy" id="btn-upg-light" data-type="light">
+            구매 <span class="cost-val" id="upg-light-cost">$80</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME OVER / VICTORY SCREEN -->
+  <div id="ending-screen" class="screen">
+    <div class="ending-content shadow-panel">
+      <h1 id="ending-title" class="ending-title">GAME OVER</h1>
+      <p id="ending-message" class="ending-message">사람들이 더 이상 당신을 믿지 않습니다.</p>
+
+      <div class="ending-stats">
+        <div class="end-stat-row">
+          <span>최종 획득 금액:</span>
+          <span id="end-money" class="text-gold">$0</span>
+        </div>
+        <div class="end-stat-row">
+          <span>진행한 라운드:</span>
+          <span id="end-rounds">0</span>
+        </div>
+        <div class="end-stat-row">
+          <span>속인 손님 수:</span>
+          <span id="end-tricked">0</span>
+        </div>
+      </div>
+
+      <button id="btn-restart" class="btn btn-primary btn-glow">다시 시작하기 (Retry)</button>
+    </div>
+  </div>
+
+  <!-- Particle Container for Coin animations -->
+  <div id="particles-container"></div>
+
+  <!-- Sound Toggle Button (Modern Audio Synthesis) -->
+  <button id="btn-sound-toggle" class="sound-toggle">
+    <span class="sound-icon">🔊</span>
+  </button>
+
+  <!-- Script -->
+  <script src="game.js"></script>
+</body>
+</html>
